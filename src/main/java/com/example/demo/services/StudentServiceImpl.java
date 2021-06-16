@@ -2,6 +2,7 @@ package com.example.demo.services;
 
 import com.example.demo.model.Student;
 import com.example.demo.repositories.StudentRepo;
+import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

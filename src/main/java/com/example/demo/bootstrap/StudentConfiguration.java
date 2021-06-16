@@ -22,9 +22,11 @@ public class StudentConfiguration {
            Student s2 =  new Student();
            s1.setFirstName("Susy");
            s1.setLastName("Sheep");
+           s1.setAge(23);
            s1.setEmail("susy@yahoo.com");
            s2.setFirstName("Peppa");
            s2.setLastName("Pig");
+           s2.setAge(12);
            s2.setEmail("peppa@gmail.com");
 
            repo.saveAll(List.of(s1, s2));
