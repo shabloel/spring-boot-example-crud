@@ -41,7 +41,7 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
+            <artifactId>spring-boot-starter-test</artifactId>git 
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -50,9 +50,7 @@
             <version>1.5.2</version>
         </dependency>
 		
-		<!--*****************this is test commit 1 ***********************-->
-		
-		<!--*****************this is test commit 2 ***********************-->
+		<!-- **********  1  ************  -->
 		
     <build>
         <plugins>
