@@ -50,8 +50,6 @@
             <version>1.5.2</version>
         </dependency>
 		
-		<!-- ######## 1 ######### -->
-		
     <build>
         <plugins>
             <plugin>
