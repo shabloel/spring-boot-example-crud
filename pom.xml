@@ -50,6 +50,8 @@
             <version>1.5.2</version>
         </dependency>
     </dependencies>
+	
+	<!--this is a test for merging -->
 
     <build>
         <plugins>
