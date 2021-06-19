@@ -41,7 +41,7 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
+            <artifactId>spring-boot-starter-test</artifactId>git 
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -53,6 +53,7 @@
 	
 	<!--this is a test for merging -->
 
+		
     <build>
         <plugins>
             <plugin>
