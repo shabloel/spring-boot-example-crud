@@ -17,7 +17,7 @@ import java.util.Optional;
  **/
 
 @Service
-public class StudentServiceImpl implements StudentService{
+public class StudentServiceImpl implements StudentService {
 
     private final StudentRepo studentRepo;
 
@@ -34,8 +34,8 @@ public class StudentServiceImpl implements StudentService{
 
     @Override
     public void addNewStudent(Student student) {
-        Optional<Student> studentOptional =  studentRepo.findStudentByEmail(student.getEmail());
-        if(studentOptional.isPresent()) {
+        Optional<Student> studentOptional = studentRepo.findStudentByEmail(student.getEmail());
+        if (studentOptional.isPresent()) {
             throw new IllegalStateException("email taken");
         }
         studentRepo.save(student);
@@ -44,26 +44,26 @@ public class StudentServiceImpl implements StudentService{
     @Override
     public void deleteStudent(Long id) {
         boolean exists = studentRepo.existsById(id);
-        if(!exists){
+        if (!exists) {
             throw new IllegalStateException("student with id " + id + "is not present in DB");
         }
         studentRepo.deleteById(id);
     }
 
-    @Transactional
+    @Transactional//with this annotation you can use the setters and dont have to call the repo
     public void updateStudent(Long id, String name, String email) {
         Student student = studentRepo.findById(id)
                 .orElseThrow(() -> new IllegalStateException(
-                        "student with id " + id + "does not exist"
+                        "student with id " + id + " does not exist"
                 ));
-        if(name != null && name.length() > 0 && !Objects.equals(student.getFirstName(), name)){
+        if (name != null && name.length() > 0 && !Objects.equals(student.getFirstName(), name)) {
             student.setFirstName(name);
         }
 
-        if(email != null && email.length() > 0 && !Objects.equals(student.getEmail(), email)){
+        if (email != null && email.length() > 0 && !Objects.equals(student.getEmail(), email)) {
             Optional<Student> studentOptional = studentRepo
                     .findStudentByEmail(email);
-            if(studentOptional.isPresent()){
+            if (studentOptional.isPresent()) {
                 throw new IllegalStateException("Email taken");
             }
             student.setEmail(email);

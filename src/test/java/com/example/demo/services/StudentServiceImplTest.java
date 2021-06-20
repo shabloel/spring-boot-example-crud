@@ -140,14 +140,59 @@ class StudentServiceImplTest {
         testStudent.setFirstName("Peppa");
         testStudent.setEmail("peppa@gmail.com");
         Optional<Student> optionalStudent = Optional.of(testStudent);
-       given(studentRepo.findById(id))
-               .willReturn(optionalStudent);
-       //when
+        given(studentRepo.findById(id))
+                .willReturn(optionalStudent);
+        //when
         studentService.updateStudent(id, firstName, email);
 
         //then
         verify(studentRepo).findById(id);
         verify(studentRepo).findStudentByEmail(email);
-        //assertThat();
+        assertThat(testStudent.getFirstName()).isEqualTo(firstName);
+        assertThat(testStudent.getEmail()).isEqualTo(email);
+    }
+
+    @Test
+    void updateStudentEmailTaken() {
+        //given
+        Long id = 1L;
+        String firstName = "Jan";
+        String email = "jansen@email.com";
+        Student testStudentId = new Student();
+        testStudentId.setFirstName("Peppa");
+        testStudentId.setEmail("peppa@gmail.com");
+        Student testStudentEmail = new Student();
+        testStudentEmail.setFirstName("Jan");
+        testStudentEmail.setEmail("jansen@email.com");
+
+        Optional<Student> optionalStudentId = Optional.of(testStudentId);
+        Optional<Student> optionalStudentEmail = Optional.of(testStudentEmail);
+        given(studentRepo.findById(id))
+                .willReturn(optionalStudentId);
+        given(studentRepo.findStudentByEmail(email))
+                .willReturn(optionalStudentEmail);
+
+        //when //then
+        assertThatThrownBy(() -> studentService.updateStudent(id, firstName, email))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("Email taken");
+
+        assertThat(testStudentId.getEmail()).isNotEqualTo(email);
+    }
+
+    @Test
+    void updateStudentCannotFindStudent() {
+        //given
+        Long id = 1L;
+        String firstName = "Jan";
+        String email = "jansen@email.com";
+
+        given(studentRepo.findById(id))
+                .willReturn(Optional.empty());
+
+        //when //then
+        assertThatThrownBy(() -> studentService.updateStudent(id, firstName, email))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("student with id " + id + " does not exist");
     }
 }
