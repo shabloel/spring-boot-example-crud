@@ -1,20 +1,22 @@
 package com.example.demo.services;
 
+import com.example.demo.model.Gender;
 import com.example.demo.model.Student;
 import com.example.demo.repositories.StudentRepo;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.List;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -34,11 +36,11 @@ class StudentServiceImplTest {
 
     private StudentService studentService;
 
-/*    @BeforeEach
+    @BeforeEach
     void setUp() {
-        autoCloseable = MockitoAnnotations.openMocks(this);
+        //autoCloseable = MockitoAnnotations.openMocks(this);
         studentService = new StudentServiceImpl(studentRepo);
-    }*/
+    }
 
 /*    @MockitoExtension.class takes care of this
     @AfterEach
@@ -58,13 +60,94 @@ class StudentServiceImplTest {
 
     @Test
     void addNewStudent() {
+        //given
+        Student student = new Student();
+        student.setFirstName("Peppa");
+        student.setLastName("Pig");
+        student.setEmail("peppa@gmail.com");
+        student.setGender(Gender.FEMALE);
+
+        //when
+        studentService.addNewStudent(student);
+
+        //then
+        ArgumentCaptor<Student> argumentCaptor = ArgumentCaptor.forClass(Student.class);
+        verify(studentRepo).save(argumentCaptor.capture());
+        Student capturedStudent = argumentCaptor.getValue();
+        assertThat(capturedStudent).isEqualTo(student);
+        verify(studentRepo).findStudentByEmail(student.getEmail());
+    }
+
+    @Test
+    void addNewStudentEmailTaken() {
+        Optional<Student> studentOptional = Optional.of(new Student());
+        //given
+        Student student = new Student();
+        student.setFirstName("Peppa");
+        student.setLastName("Pig");
+        student.setEmail("peppa@gmail.com");
+        student.setGender(Gender.FEMALE);
+
+        given(studentRepo.findStudentByEmail(anyString()))
+                .willReturn(studentOptional);
+
+        //then
+        assertThatThrownBy(() -> studentService.addNewStudent(student))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("email taken");
+
+        verify(studentRepo, never()).save(any());
     }
 
     @Test
     void deleteStudent() {
+        //given
+        Long id = 1L;
+        given(studentRepo.existsById(anyLong()))
+                .willReturn(true);
+        //when
+        studentService.deleteStudent(id);
+        //then
+        ArgumentCaptor<Long> argumentCaptor = ArgumentCaptor.forClass(Long.class);
+        verify(studentRepo).deleteById(argumentCaptor.capture());
+        Long capturedId = argumentCaptor.getValue();
+        assertThat(capturedId).isEqualTo(id);
+        verify(studentRepo).existsById(id);
+    }
+
+    @Test
+    void deleteStudentDoesNotExist() {
+        //given
+        Long id = 1L;
+        given(studentRepo.existsById(anyLong()))
+                .willReturn(false);
+
+        //then
+        assertThatThrownBy(() -> studentService.deleteStudent(id))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("student with id " + id + "is not present in DB");
+
+        verify(studentRepo, never()).deleteById(id);
     }
 
     @Test
     void updateStudent() {
+        //given
+        Long id = 1L;
+        String firstName = "Jan";
+        String email = "jansen@yahoo.com";
+        Student testStudent = new Student();
+        testStudent.setFirstName("Peppa");
+        testStudent.setEmail("peppa@gmail.com");
+        Optional<Student> optionalStudent = Optional.of(testStudent);
+       given(studentRepo.findById(id))
+               .willReturn(optionalStudent);
+       //when
+        studentService.updateStudent(id, firstName, email);
+
+        //then
+        verify(studentRepo).findById(id);
+        verify(studentRepo).findStudentByEmail(email);
+        //assertThat();
     }
 }
