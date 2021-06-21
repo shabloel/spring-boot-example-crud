@@ -13,7 +13,7 @@ import java.util.List;
  **/
 
 @RestController
-@RequestMapping
+@RequestMapping("api/test")
 public class StudentController {
 
     private final StudentService studentService;
@@ -24,13 +24,12 @@ public class StudentController {
     }
 
 
-    @GetMapping
+    @GetMapping("students")
     public List<Student> test(){
-
         return studentService.getStudents();
     }
 
-    @PostMapping
+    @PostMapping("newstudent")
     public void saveStudent(@RequestBody  Student student){
         studentService.addNewStudent(student);
     }

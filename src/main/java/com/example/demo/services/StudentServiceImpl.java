@@ -1,8 +1,9 @@
 package com.example.demo.services;
 
+import com.example.demo.exception.BadRequestException;
+import com.example.demo.exception.StudentNotFoundException;
 import com.example.demo.model.Student;
 import com.example.demo.repositories.StudentRepo;
-import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,7 +27,6 @@ public class StudentServiceImpl implements StudentService {
         this.studentRepo = studentRepo;
     }
 
-
     @Override
     public List<Student> getStudents() {
         return studentRepo.findAll();
@@ -36,7 +36,7 @@ public class StudentServiceImpl implements StudentService {
     public void addNewStudent(Student student) {
         Optional<Student> studentOptional = studentRepo.findStudentByEmail(student.getEmail());
         if (studentOptional.isPresent()) {
-            throw new IllegalStateException("email taken");
+            throw new BadRequestException("email taken");
         }
         studentRepo.save(student);
     }
@@ -45,7 +45,7 @@ public class StudentServiceImpl implements StudentService {
     public void deleteStudent(Long id) {
         boolean exists = studentRepo.existsById(id);
         if (!exists) {
-            throw new IllegalStateException("student with id " + id + "is not present in DB");
+            throw new StudentNotFoundException("student with id " + id + "is not present in DB");
         }
         studentRepo.deleteById(id);
     }
@@ -53,9 +53,7 @@ public class StudentServiceImpl implements StudentService {
     @Transactional//with this annotation you can use the setters and dont have to call the repo
     public void updateStudent(Long id, String name, String email) {
         Student student = studentRepo.findById(id)
-                .orElseThrow(() -> new IllegalStateException(
-                        "student with id " + id + " does not exist"
-                ));
+                .orElseThrow(() -> new StudentNotFoundException("student with id " + id + "is not present in DB"));
         if (name != null && name.length() > 0 && !Objects.equals(student.getFirstName(), name)) {
             student.setFirstName(name);
         }
@@ -64,7 +62,7 @@ public class StudentServiceImpl implements StudentService {
             Optional<Student> studentOptional = studentRepo
                     .findStudentByEmail(email);
             if (studentOptional.isPresent()) {
-                throw new IllegalStateException("Email taken");
+                throw new BadRequestException("Email taken");
             }
             student.setEmail(email);
         }

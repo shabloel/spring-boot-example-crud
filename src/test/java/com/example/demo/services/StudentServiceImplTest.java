@@ -1,9 +1,12 @@
 package com.example.demo.services;
 
+import com.example.demo.exception.BadRequestException;
+import com.example.demo.exception.StudentNotFoundException;
 import com.example.demo.model.Gender;
 import com.example.demo.model.Student;
 import com.example.demo.repositories.StudentRepo;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -49,6 +52,7 @@ class StudentServiceImplTest {
     }*/
 
     @Test
+    @DisplayName("Test should pass when studentRepo is being called")
     void getStudents() {
         //when
         studentService.getStudents();
@@ -93,7 +97,7 @@ class StudentServiceImplTest {
 
         //then
         assertThatThrownBy(() -> studentService.addNewStudent(student))
-                .isInstanceOf(IllegalStateException.class)
+                .isInstanceOf(BadRequestException.class)
                 .hasMessageContaining("email taken");
 
         verify(studentRepo, never()).save(any());
@@ -124,7 +128,7 @@ class StudentServiceImplTest {
 
         //then
         assertThatThrownBy(() -> studentService.deleteStudent(id))
-                .isInstanceOf(IllegalStateException.class)
+                .isInstanceOf(StudentNotFoundException.class)
                 .hasMessageContaining("student with id " + id + "is not present in DB");
 
         verify(studentRepo, never()).deleteById(id);
@@ -174,7 +178,7 @@ class StudentServiceImplTest {
 
         //when //then
         assertThatThrownBy(() -> studentService.updateStudent(id, firstName, email))
-                .isInstanceOf(IllegalStateException.class)
+                .isInstanceOf(BadRequestException.class)
                 .hasMessageContaining("Email taken");
 
         assertThat(testStudentId.getEmail()).isNotEqualTo(email);
@@ -192,7 +196,7 @@ class StudentServiceImplTest {
 
         //when //then
         assertThatThrownBy(() -> studentService.updateStudent(id, firstName, email))
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessageContaining("student with id " + id + " does not exist");
+                .isInstanceOf(StudentNotFoundException.class)
+                .hasMessageContaining("student with id " + id + "is not present in DB");
     }
 }
