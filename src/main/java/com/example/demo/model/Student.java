@@ -1,5 +1,7 @@
 package com.example.demo.model;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 
 import javax.persistence.*;
@@ -12,6 +14,7 @@ import javax.persistence.*;
 @Data
 @Entity
 @Table
+@ApiModel(description = "Details about the Student")
 public class Student {
 
     @Id
@@ -28,6 +31,7 @@ public class Student {
     private String lastName;
     private Gender gender;
     private int age;
+    @ApiModelProperty(notes="unique email on which you can search")
     private String email;
 
     @Transient

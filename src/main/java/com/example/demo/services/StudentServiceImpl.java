@@ -1,9 +1,11 @@
 package com.example.demo.services;
 
+import com.example.demo.controllers.StudentController;
 import com.example.demo.exception.BadRequestException;
 import com.example.demo.exception.StudentNotFoundException;
 import com.example.demo.model.Student;
 import com.example.demo.repositories.StudentRepo;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,6 +13,7 @@ import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.logging.Logger;
 
 /**
  * @author : christiaan.griffioen
@@ -31,6 +34,16 @@ public class StudentServiceImpl implements StudentService {
     public List<Student> getStudents() {
         return studentRepo.findAll();
     }
+
+    @Override
+    public Student getStudentById(Long id) {
+        boolean exists = studentRepo.existsById(id);
+        if(!exists){
+            throw new StudentNotFoundException("student with id " + id + "is not present in DB");
+        }
+        return studentRepo.getById(id);
+    }
+
 
     @Override
     public void addNewStudent(Student student) {

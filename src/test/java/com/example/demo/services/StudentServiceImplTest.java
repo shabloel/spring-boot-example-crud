@@ -19,8 +19,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 /**
  * @author : christiaan.griffioen
@@ -60,6 +59,41 @@ class StudentServiceImplTest {
         //verify that studentRepo was invoked after studentService.getStudents was called.
         //we don't want to actually call the DB, so to make our unit test fast, we mock studentRepo.
         verify(studentRepo).findAll();
+    }
+
+    @Test
+    @DisplayName("Test should pass when studentRepo is being called")
+    void getStudentById() {
+        //given
+        Long id = 1L;
+        Student givenStudent = new Student();
+        givenStudent.setFirstName("Peppa");
+        givenStudent.setLastName("Pig");
+        Optional<Student> optionalStudent = Optional.of(givenStudent);
+        given(studentRepo.existsById(1L))
+                .willReturn(true);
+        //when
+        studentService.getStudentById(id);
+        //then
+        verify(studentRepo).existsById(id);
+        verify(studentRepo).getById(id);
+    }
+
+    @Test
+    @DisplayName("Test should pass when error message is returned")
+    void getStudentByIdStudentNotFound() {
+        //given
+        Long id = 1L;
+        given(studentRepo.existsById(anyLong()))
+                .willReturn(false);
+
+        //then
+        assertThatThrownBy(() -> studentService.getStudentById(id))
+                .isInstanceOf(StudentNotFoundException.class)
+                .hasMessageContaining("student with id " + id + "is not present in DB");
+
+        verify(studentRepo, never()).findById(id);
+
     }
 
     @Test
